@@ -4,7 +4,7 @@ import 'package:busy_status_bar/tos/page/tos_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
-import '../main/main_screen.dart';
+import '../main/page/main_page.dart';
 
 GoRouter navigationFlow(String startRoute) {
   return GoRouter(
@@ -30,7 +30,7 @@ GoRouter navigationFlow(String startRoute) {
 
 String firstScreenRoute(bool isDeviceExist) {
   if (isDeviceExist) {
-    return NavigationRoute.tosScreen;
+    return NavigationRoute.mainScreen;
   } else {
     return NavigationRoute.tosScreen;
   }

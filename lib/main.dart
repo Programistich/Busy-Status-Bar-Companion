@@ -1,3 +1,4 @@
+import 'package:busy_status_bar/ble/ble_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -35,6 +36,9 @@ class App extends StatelessWidget {
     return MultiRepositoryProvider(
         providers: [
           RepositoryProvider(
+            create: (context) => ble,
+          ),
+          RepositoryProvider(
             create: (context) => firstPairRepository,
           ),
           RepositoryProvider(
@@ -42,6 +46,9 @@ class App extends StatelessWidget {
           ),
           RepositoryProvider(
             create: (context) => BLEConnection(ble),
+          ),
+          RepositoryProvider(
+            create: (context) => BLEService(ble),
           ),
         ],
         child: MaterialApp.router(

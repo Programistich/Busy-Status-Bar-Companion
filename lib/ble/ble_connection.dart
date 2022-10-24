@@ -9,11 +9,11 @@ class BLEConnection {
 
   final logger = Logger();
 
-  final _controller = StreamController<ConnectionStateUpdate>();
+  final _controller = StreamController<ConnectionStateUpdate>.broadcast();
   StreamSubscription<ConnectionStateUpdate>? _subscription;
   Stream<ConnectionStateUpdate> get state => _controller.stream;
 
-  Future<void> connect(String deviceId) async {
+  Future<void> connect(String deviceId, bool wait) async {
     _subscription = _ble.connectToDevice(id: deviceId).listen(
       (update) async {
         if (update.failure != null) {
@@ -24,12 +24,14 @@ class BLEConnection {
             failure: null,
           ));
         } else if (update.connectionState == DeviceConnectionState.connected) {
-          addUpdate(ConnectionStateUpdate(
-            deviceId: update.deviceId,
-            connectionState: DeviceConnectionState.connecting,
-            failure: null,
-          ));
-          await Future.delayed(const Duration(seconds: 25));
+          if (wait) {
+            addUpdate(ConnectionStateUpdate(
+              deviceId: update.deviceId,
+              connectionState: DeviceConnectionState.connecting,
+              failure: null,
+            ));
+            await Future.delayed(const Duration(seconds: 15));
+          }
           addUpdate(ConnectionStateUpdate(
             deviceId: update.deviceId,
             connectionState: DeviceConnectionState.connected,
@@ -53,46 +55,7 @@ class BLEConnection {
   Future<void> dispose() async {
     logger.i("Stop process connect to device");
     _subscription?.cancel();
+    _subscription = null;
     await _controller.close();
   }
 }
-
-// final characteristic = QualifiedCharacteristic(
-//   characteristicId:
-//       Uuid.parse('00002a28-0000-1000-8000-00805f9b34fb'),
-//   serviceId: Uuid.parse('0000180a-0000-1000-8000-00805f9b34fb'),
-//   deviceId: deviceId,
-// );
-// _ble.subscribeToCharacteristic(characteristic).listen((event) {
-//   print(event);
-// });
-// addUpdate(ConnectionStateUpdate(
-//   deviceId: update.deviceId,
-//   connectionState: DeviceConnectionState.connecting,
-//   failure: null,
-// ));
-// await Future.delayed(const Duration(seconds: 10));
-// try {
-//   final characteristic = QualifiedCharacteristic(
-//     characteristicId:
-//         Uuid.parse('00002a28-0000-1000-8000-00805f9b34fb'),
-//     serviceId: Uuid.parse('0000180a-0000-1000-8000-00805f9b34fb'),
-//     deviceId: update.deviceId,
-//   );
-//   logger.i("Start read characteristic");
-//   final readCharacteristic =
-//       await _ble.readCharacteristic(characteristic);
-//   logger.i("Read characteristic: $readCharacteristic.");
-//   addUpdate(ConnectionStateUpdate(
-//     deviceId: update.deviceId,
-//     connectionState: DeviceConnectionState.connected,
-//     failure: null,
-//   ));
-// } on Exception catch (exception) {
-//   logger.d("Error when try get services", exception);
-//   addUpdate(ConnectionStateUpdate(
-//     deviceId: update.deviceId,
-//     connectionState: DeviceConnectionState.disconnected,
-//     failure: null,
-//   ));
-// }
