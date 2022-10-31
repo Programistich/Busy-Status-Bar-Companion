@@ -3,6 +3,7 @@ import 'package:busy_status_bar/first_pair/bloc/first_pair_bloc.dart';
 import 'package:busy_status_bar/first_pair/repository/first_pair_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../ble/ble_scanner.dart';
@@ -18,7 +19,8 @@ class FirstPairPage extends StatelessWidget {
     return BlocProvider(
       create: (context) {
         final bleScanner = context.read<BLEScanner>();
-        final bleConnection = context.read<BLEConnection>();
+        final ble = context.read<FlutterReactiveBle>();
+        final bleConnection = BLEConnection(ble);
         final repository = context.read<FirstPairRepository>();
         return FirstPairBloc(
           bleScanner: bleScanner,

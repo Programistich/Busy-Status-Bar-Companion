@@ -1,10 +1,11 @@
 import 'package:busy_status_bar/first_pair/page/first_pair_page.dart';
 import 'package:busy_status_bar/navigation/route.dart';
 import 'package:busy_status_bar/tos/page/tos_page.dart';
+import 'package:busy_status_bar/wifi/page/wiff_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
-import '../main/main_screen.dart';
+import '../main/page/main_page.dart';
 
 GoRouter navigationFlow(String startRoute) {
   return GoRouter(
@@ -24,13 +25,18 @@ GoRouter navigationFlow(String startRoute) {
         builder: (BuildContext context, GoRouterState state) =>
             const MainPage(),
       ),
+      GoRoute(
+        path: NavigationRoute.wifiScreen,
+        builder: (BuildContext context, GoRouterState state) =>
+            const WifiPage(),
+      )
     ],
   );
 }
 
 String firstScreenRoute(bool isDeviceExist) {
   if (isDeviceExist) {
-    return NavigationRoute.tosScreen;
+    return NavigationRoute.mainScreen;
   } else {
     return NavigationRoute.tosScreen;
   }

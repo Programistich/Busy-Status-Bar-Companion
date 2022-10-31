@@ -20,7 +20,9 @@ class BLEScanner {
     devices.clear();
     _subscription?.cancel();
     _subscription = _ble.scanForDevices(
-        withServices: [], scanMode: ScanMode.lowLatency).listen((device) {
+      withServices: [],
+      scanMode: ScanMode.lowLatency,
+    ).listen((device) {
       if (deviceCanPair(device)) {
         final knownDeviceIndex = devices.indexWhere((it) => it.id == device.id);
         if (knownDeviceIndex >= 0) {
@@ -37,8 +39,7 @@ class BLEScanner {
   }
 
   bool deviceCanPair(DiscoveredDevice device) {
-    return device.id.startsWith("80:E1:26:") ||
-        device.name.startsWith("Flipper");
+    // return device.name.startsWith("BusyLamp");
     return true;
   }
 

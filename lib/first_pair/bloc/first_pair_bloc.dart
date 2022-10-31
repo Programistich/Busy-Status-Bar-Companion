@@ -45,7 +45,7 @@ class FirstPairBloc extends Bloc<FirstPairEvent, FirstPairState> {
         final connectedDevice = event.device;
         _connectionDevice = connectedDevice;
         add(FirstPairEventNewDevice(devices: convert(currentDevices)));
-        await bleConnection.connect(connectedDevice.id);
+        await bleConnection.connect(connectedDevice.id, true);
         await emit.forEach(bleConnection.state, onData: (data) {
           switch (data.connectionState) {
             case DeviceConnectionState.connecting:
@@ -66,7 +66,6 @@ class FirstPairBloc extends Bloc<FirstPairEvent, FirstPairState> {
 
     on<FirstPairEventFinish>((event, emit) async {
       await firstPairRepository.saveDevice(event.device.id);
-      bleConnection.dispose();
       emit(FirstPairConnected());
     });
   }
@@ -83,9 +82,10 @@ class FirstPairBloc extends Bloc<FirstPairEvent, FirstPairState> {
   }
 
   @override
-  Future<void> close() {
+  Future<void> close() async {
     logger.i("Close first pair bloc");
-    bleScanner.stopSearch();
+    await bleScanner.stopSearch();
+    await bleConnection.dispose();
     _connectionDevice = null;
     return super.close();
   }

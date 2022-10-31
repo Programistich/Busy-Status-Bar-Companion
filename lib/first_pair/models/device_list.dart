@@ -1,9 +1,3 @@
-class DeviceList {
-  final List<Device> devices;
-
-  DeviceList({required this.devices});
-}
-
 class Device {
   Device({required this.name, required this.id, required this.inProgress});
 
