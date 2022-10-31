@@ -30,7 +30,7 @@ class BLEConnection {
               connectionState: DeviceConnectionState.connecting,
               failure: null,
             ));
-            await Future.delayed(const Duration(seconds: 15));
+            await Future.delayed(const Duration(seconds: 10));
           }
           addUpdate(ConnectionStateUpdate(
             deviceId: update.deviceId,

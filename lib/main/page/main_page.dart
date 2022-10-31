@@ -2,6 +2,7 @@ import 'package:busy_status_bar/ble/ble_connection.dart';
 import 'package:busy_status_bar/ble/ble_service.dart';
 import 'package:busy_status_bar/first_pair/repository/first_pair_repository.dart';
 import 'package:busy_status_bar/main/bloc/main_bloc.dart';
+import 'package:busy_status_bar/main/widgets/wifi_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
@@ -38,6 +39,10 @@ class MainPage extends StatelessWidget {
           if (state is MainConnected) {
             bodyContent.add(ConnectedTitleWidget(name: state.id));
             bodyContent.add(const PingButtonWidget());
+            bodyContent.add(const SizedBox(
+              height: 10,
+            ));
+            bodyContent.add(const WifiButtonWidget());
           }
 
           return Scaffold(
