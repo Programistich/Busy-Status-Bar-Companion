@@ -20,7 +20,28 @@ void main() {
     expect(statusResponse.wifiConnected, equals(true));
     expect(statusResponse.ssid, equals("neuron"));
   });
-  test('Parse wifi search response', () {});
+  test('Parse wifi search response', () async {
+    final decoder = BLEProtocolDecoder();
+    final resultFuture = decoder.state.first;
+    final firstBatchString =
+        File('test_resources/wifi_list_1.hex.bytes.txt').readAsStringSync();
+    decoder.onNewBytes(HEX.decode(firstBatchString));
+    final secondBatchString =
+        File('test_resources/wifi_list_2.hex.bytes.txt').readAsStringSync();
+    decoder.onNewBytes(HEX.decode(secondBatchString));
+    final result = await resultFuture;
+    final wifiListResponse = result as WiFiListResponse;
+    final wifiList = wifiListResponse.wifiList;
+    expect(wifiList.length, equals(20));
+    final actualResult = StringBuffer();
+    for (var element in wifiList) {
+      actualResult
+          .write("${element.ssid} ${element.rssi} ${element.security.code}\n");
+    }
+    final expectedResult =
+        File('test_resources/wifi_list.txt').readAsStringSync();
+    expect(actualResult.toString(), equals(expectedResult));
+  });
   test('Parse connect wifi response', () {});
   test('Parse image response', () {});
 }

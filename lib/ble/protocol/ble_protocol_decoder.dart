@@ -6,7 +6,7 @@ import 'package:busy_status_bar/ble/protocol/protocol_requests.dart';
 import 'package:busy_status_bar/ble/protocol/protocol_responses.dart';
 
 class BLEProtocolDecoder {
-  ByteData? _pendingData;
+  Uint8List? _pendingData;
   final _controller = StreamController<BleResponse>.broadcast();
 
   Stream<BleResponse> get state => _controller.stream;
@@ -16,13 +16,16 @@ class BLEProtocolDecoder {
 
     final pendingData = _pendingData;
     if (pendingData != null) {
-      builder.add(pendingData.buffer.asUint8List());
+      builder.add(pendingData);
     }
+    builder.add(bytes);
 
     BleResponse? response;
     ByteDataReader reader =
-    ByteDataReader(ByteData.sublistView(Uint8List.fromList(bytes)));
+        ByteDataReader(ByteData.sublistView(builder.toBytes()));
+    int offset = 0;
     do {
+      offset = reader.offset; // Remember offset if reader failed
       response = _parseNewResponse(reader);
       if (response != null) {
         _controller.add(response);
@@ -30,8 +33,7 @@ class BLEProtocolDecoder {
     } while (response != null);
 
     if (reader.pendingBytes() > 0) {
-      final sublist = reader.data.buffer.asUint8List().sublist(reader.offset);
-      _pendingData = ByteData.sublistView(sublist);
+      _pendingData = reader.data.buffer.asUint8List().sublist(offset);
     }
   }
 
@@ -65,6 +67,8 @@ class BLEProtocolDecoder {
   BleResponse? _parseResponse(int commandType, ByteDataReader reader) {
     if (commandType == CommandCode.STATUS.code) {
       return StatusResponse(reader);
+    } else if (commandType == CommandCode.WIFISEARCH.code) {
+      return WiFiListResponse(reader);
     }
     return null;
   }
@@ -85,8 +89,17 @@ class ByteDataReader {
     return result;
   }
 
-  int readUint8() {
+  int? readInt8() {
     if (data.lengthInBytes - offset <= 1) {
+      return null;
+    }
+    final result = data.getInt8(offset);
+    offset++;
+    return result;
+  }
+
+  int readUint8() {
+    if (data.lengthInBytes - offset < 1) {
       return -1;
     }
     final result = data.getUint8(offset);
@@ -107,21 +120,26 @@ class ByteDataReader {
     return data.lengthInBytes - offset;
   }
 
-  String? readString(int maxLength) {
+  String? readString(int length) {
     final builder = BytesBuilder();
+    int expectedOffset = offset + length;
     int index = 0;
     do {
       final readChar = readUint8();
       if (readChar <= 0) {
         if (index == 0) {
+          seekToOffset(expectedOffset);
           return null;
         } else {
+          seekToOffset(expectedOffset);
           return String.fromCharCodes(builder.toBytes());
         }
       }
       builder.addByte(readChar);
       index++;
-    } while (index < maxLength && offset < data.lengthInBytes - 1);
+    } while (index < length && offset < data.lengthInBytes - 1);
+    seekToOffset(expectedOffset);
+    return String.fromCharCodes(builder.toBytes());
   }
 
   void seekToOffset(int requestOffset) {
