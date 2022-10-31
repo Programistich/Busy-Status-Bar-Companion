@@ -85,3 +85,23 @@ class WiFiListResponse extends BleResponse {
     return CommandCode.WIFISEARCH;
   }
 }
+
+class WiFiConnectResponse extends BleResponse {
+  bool successful = false;
+
+  WiFiConnectResponse(ByteDataReader reader) {
+    successful = reader.readUint8() == 1;
+  }
+
+  @override
+  CommandCode commandCode() {
+    return CommandCode.WIFICONNECT;
+  }
+}
+
+class ImageResponse extends BleResponse {
+  @override
+  CommandCode commandCode() {
+    return CommandCode.SENDIMAGE;
+  }
+}

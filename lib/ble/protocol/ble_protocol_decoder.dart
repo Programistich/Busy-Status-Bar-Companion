@@ -69,6 +69,10 @@ class BLEProtocolDecoder {
       return StatusResponse(reader);
     } else if (commandType == CommandCode.WIFISEARCH.code) {
       return WiFiListResponse(reader);
+    } else if (commandType == CommandCode.WIFICONNECT.code) {
+      return WiFiConnectResponse(reader);
+    } else if (commandType == CommandCode.SENDIMAGE.code) {
+      return ImageResponse();
     }
     return null;
   }
@@ -81,7 +85,7 @@ class ByteDataReader {
   var offset = 0;
 
   int readUint16([Endian endian = Endian.big]) {
-    if (data.lengthInBytes - offset <= 2) {
+    if (data.lengthInBytes - offset < 2) {
       return -1;
     }
     final result = data.getUint16(offset, endian);
@@ -90,7 +94,7 @@ class ByteDataReader {
   }
 
   int? readInt8() {
-    if (data.lengthInBytes - offset <= 1) {
+    if (data.lengthInBytes - offset < 1) {
       return null;
     }
     final result = data.getInt8(offset);
@@ -108,7 +112,7 @@ class ByteDataReader {
   }
 
   int readUint32([Endian endian = Endian.big]) {
-    if (data.lengthInBytes - offset <= 4) {
+    if (data.lengthInBytes - offset < 4) {
       return -1;
     }
     final result = data.getUint32(offset, endian);

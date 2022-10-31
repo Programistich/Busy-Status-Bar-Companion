@@ -1,5 +1,4 @@
 import 'package:busy_status_bar/ble/protocol/ble_protocol_decoder.dart';
-import 'package:busy_status_bar/ble/protocol/ble_protocol_encoder.dart';
 import 'package:busy_status_bar/ble/protocol/protocol_responses.dart';
 import 'package:hex/hex.dart';
 import 'package:test/test.dart';
@@ -42,6 +41,30 @@ void main() {
         File('test_resources/wifi_list.txt').readAsStringSync();
     expect(actualResult.toString(), equals(expectedResult));
   });
-  test('Parse connect wifi response', () {});
-  test('Parse image response', () {});
+  test('Parse connect wifi response false', () async {
+    final decoder = BLEProtocolDecoder();
+    final bytes = HEX.decode("AA55020100000000");
+    final resultFuture = decoder.state.first;
+    decoder.onNewBytes(bytes);
+    final result = await resultFuture;
+    final statusResponse = result as WiFiConnectResponse;
+    expect(statusResponse.successful, equals(false));
+  });
+  test('Parse connect wifi response true', () async {
+    final decoder = BLEProtocolDecoder();
+    final bytes = HEX.decode("AA55020100000001");
+    final resultFuture = decoder.state.first;
+    decoder.onNewBytes(bytes);
+    final result = await resultFuture;
+    final statusResponse = result as WiFiConnectResponse;
+    expect(statusResponse.successful, equals(true));
+  });
+  test('Parse image response', () async {
+    final decoder = BLEProtocolDecoder();
+    final bytes = HEX.decode("AA550300000000");
+    final resultFuture = decoder.state.first;
+    decoder.onNewBytes(bytes);
+    final result = await resultFuture;
+    expect(result is ImageResponse, equals(true));
+  });
 }
