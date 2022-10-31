@@ -1,0 +1,20 @@
+neuron -48 3
+neuron -58 3
+DIRECT-2C-HP M428dw LJ -60 3
+tiktok-us -63 3
+NFCstand -64 3
+neuron -65 3
+United-Music -74 3
+UM -75 3
+Whitestudio -75 3
+Cifra1 -75 3
+IMPACT_HUB -77 3
+IMPACT-HUB-GUESTS -80 3
+IMPACT_HUB -81 3
+DOM.RU Wi-Fi -81 0
+Moscow_WiFi_Free -81 0
+Jabuka.ru -82 3
+Moscow_WiFi_Free -83 0
+Jabuka.ru -86 3
+Jabuka Free -86 0
+Jabuka Free -87 0
