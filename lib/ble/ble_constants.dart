@@ -1,7 +1,10 @@
+import 'dart:typed_data';
+
 class BLEConstants {
   static const String DEVICE_NAME_PREFIX = "Flipper";
   static const String MAC_PREFIX_ANDROID = "80:E1:26:";
-  static const List<int> commandprefix = [0xAA, 0x55];
+  static int COMMAND_PREFIX =
+      ByteData.sublistView(Uint8List.fromList([0xAA, 0x55])).getUint16(0);
 }
 
 class Service {

@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:busy_status_bar/ble/protocol/protocol_models.dart';
+import 'package:busy_status_bar/ble/protocol/protocol_requests.dart';
 
 import '../ble_constants.dart';
 
@@ -8,7 +8,7 @@ class BLEProtocolEncoder {
   Uint8List wrapRequest(BleRequest request) {
     final builder = BytesBuilder();
 
-    builder.add(BLEConstants.commandprefix);
+    builder.addUInt16(BLEConstants.COMMAND_PREFIX);
     builder.addByte(request
         .commandCode()
         .code);

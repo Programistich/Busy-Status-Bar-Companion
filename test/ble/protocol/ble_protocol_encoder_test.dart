@@ -1,5 +1,5 @@
 import 'package:busy_status_bar/ble/protocol/ble_protocol_encoder.dart';
-import 'package:busy_status_bar/ble/protocol/protocol_models.dart';
+import 'package:busy_status_bar/ble/protocol/protocol_requests.dart';
 import 'package:hex/hex.dart';
 import 'package:test/test.dart';
 import 'dart:io';
