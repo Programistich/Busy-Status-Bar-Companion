@@ -1,7 +1,10 @@
+import 'package:busy_status_bar/first_pair/repository/first_pair_repository.dart';
 import 'package:busy_status_bar/wifi/bloc/wifi_bloc.dart';
 import 'package:busy_status_bar/wifi/widgtes/wifi_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../ble/ble_service.dart';
 
 class WifiPage extends StatelessWidget {
   const WifiPage({super.key});
@@ -10,7 +13,10 @@ class WifiPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) {
-        return WifiBloc();
+        final bleService = context.read<BLEService>();
+        final repository = context.read<FirstPairRepository>();
+        return WifiBloc(bleService: bleService, repository: repository)
+          ..add(WifiEventInitial());
       },
       child: BlocBuilder<WifiBloc, WifiState>(
         builder: (context, state) {
