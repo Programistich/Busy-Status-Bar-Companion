@@ -2,21 +2,21 @@ import 'package:flutter/material.dart';
 
 import '../model/wifi_list.dart';
 
-class WifiItemWidget extends StatefulWidget {
+class WifiItem extends StatefulWidget {
   final Wifi wifi;
   final Function(Wifi, String) onConnect;
   String password = "";
 
-  WifiItemWidget({
+  WifiItem({
     required this.wifi,
     required this.onConnect,
     Key? key,
   }) : super(key: key);
   @override
-  _WifiItemWidget createState() => _WifiItemWidget();
+  _WifiItem createState() => _WifiItem();
 }
 
-class _WifiItemWidget extends State<WifiItemWidget> {
+class _WifiItem extends State<WifiItem> {
   final TextEditingController _textFieldController = TextEditingController();
 
   Future<void> _displayTextInputDialog(BuildContext context) async {
@@ -62,19 +62,22 @@ class _WifiItemWidget extends State<WifiItemWidget> {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: Row(
-        children: [
-          const Icon(Icons.wifi),
-          Text(widget.wifi.name),
-          const Spacer(),
-          SizedBox(
-            height: 30.0,
-            child: ElevatedButton(
-              onPressed: () => _displayTextInputDialog(context),
-              child: const Text('Connect'),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 4.0, top: 4.0),
+        child: Row(
+          children: [
+            const Icon(Icons.wifi),
+            Text(widget.wifi.name),
+            const Spacer(),
+            SizedBox(
+              height: 30.0,
+              child: ElevatedButton(
+                onPressed: () => _displayTextInputDialog(context),
+                child: const Text('Connect'),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

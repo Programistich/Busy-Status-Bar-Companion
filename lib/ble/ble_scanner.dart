@@ -39,8 +39,7 @@ class BLEScanner {
   }
 
   bool deviceCanPair(DiscoveredDevice device) {
-    // return device.name.startsWith("BusyLamp");
-    return true;
+    return device.name.isNotEmpty;
   }
 
   Future<void> stopSearch() async {

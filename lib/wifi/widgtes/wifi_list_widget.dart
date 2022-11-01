@@ -13,14 +13,15 @@ class WifiListWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final bloc = context.read<WifiBloc>();
     final wifisWidget = wifis.map(
-      (wifi) => WifiItemWidget(
+      (wifi) => WifiItem(
           wifi: wifi,
           onConnect: (wifi, password) =>
               bloc..add(WifiEventConnect(wifi: wifi, password: password))),
     );
 
-    return SingleChildScrollView(
-      child: Column(
+    return Expanded(
+      child: ListView(
+        shrinkWrap: true,
         children: wifisWidget.toList(),
       ),
     );

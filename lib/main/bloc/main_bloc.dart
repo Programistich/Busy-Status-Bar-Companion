@@ -32,10 +32,5 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         }
       });
     });
-
-    on<MainEventPing>((event, emit) async {
-      final deviceId = await firstPairRepository.getDevice();
-      if (deviceId == null) return;
-    });
   }
 }

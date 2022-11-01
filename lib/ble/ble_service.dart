@@ -24,10 +24,7 @@ class BLEService {
   }
 
   Future<WiFiListResponse?> getWifis() async {
-    _ble.writeCharacteristicWithoutResponse(
-      _writeCharacteristic(),
-      value: encoder.wrapRequest(WiFiSearchRequest()),
-    );
+    writeRequest(WiFiSearchRequest());
 
     return await decoder.state.where((event) => event is WiFiListResponse).first
         as WiFiListResponse?;
@@ -37,10 +34,7 @@ class BLEService {
     String name,
     String password,
   ) async {
-    _ble.writeCharacteristicWithoutResponse(
-      _writeCharacteristic(),
-      value: encoder.wrapRequest(WiFiConnectRequest(name, password)),
-    );
+    await writeRequest(WiFiConnectRequest(name, password));
 
     return await decoder.state
         .where((event) => event is WiFiConnectResponse)
@@ -48,31 +42,32 @@ class BLEService {
   }
 
   Future<ImageResponse?> sendImage(Image image) async {
-    _ble.writeCharacteristicWithoutResponse(
-      _writeCharacteristic(),
-      value: encoder.wrapRequest(SendImageRequest(image)),
-    );
+    await writeRequest(SendImageRequest(image));
 
     return await decoder.state.where((event) => event is ImageResponse).first
         as ImageResponse?;
   }
 
   Future<StatusResponse?> getStatus() async {
-    _ble.writeCharacteristicWithoutResponse(
-      _writeCharacteristic(),
-      value: encoder.wrapRequest(StatusRequest()),
-    );
+    await writeRequest(StatusRequest());
 
     return await decoder.state.where((event) => event is StatusResponse).first
         as StatusResponse?;
+  }
+
+  Future<void> writeRequest(BleRequest request) async {
+    _ble.writeCharacteristicWithoutResponse(
+      _writeCharacteristic(),
+      value: encoder.wrapRequest(request),
+    );
   }
 
   QualifiedCharacteristic _readCharacteristic() {
     if (deviceId == null) throw Exception('Device not found');
 
     return QualifiedCharacteristic(
-      characteristicId: BLEConstants.service,
-      serviceId: BLEConstants.rx,
+      characteristicId: BLEConstants.rx,
+      serviceId: BLEConstants.service,
       deviceId: deviceId!,
     );
   }
@@ -81,8 +76,8 @@ class BLEService {
     if (deviceId == null) throw Exception('Device not found');
 
     return QualifiedCharacteristic(
-      characteristicId: BLEConstants.service,
-      serviceId: BLEConstants.tx,
+      characteristicId: BLEConstants.tx,
+      serviceId: BLEConstants.service,
       deviceId: deviceId!,
     );
   }

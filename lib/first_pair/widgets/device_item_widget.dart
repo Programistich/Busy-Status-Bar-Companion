@@ -20,27 +20,29 @@ class DeviceItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      child: Row(
-        children: [
-          const Icon(Icons.bluetooth),
-          if (device.name.isEmpty) Text(device.id),
-          Text(device.name),
-          const Spacer(),
-          if (inProgress)
-            const SizedBox(
-              height: 20.0,
-              width: 20.0,
-              child: CircularProgressIndicator(strokeWidth: 2.5),
-            ),
-          if (!inProgress)
-            SizedBox(
-              height: 30.0,
-              child: ElevatedButton(
-                onPressed: () => {onSelected(device)},
-                child: const Text('Connect'),
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 4.0, top: 4.0),
+        child: Row(
+          children: [
+            const Icon(Icons.bluetooth),
+            Text(device.name),
+            const Spacer(),
+            if (inProgress)
+              const SizedBox(
+                height: 20.0,
+                width: 20.0,
+                child: CircularProgressIndicator(strokeWidth: 2.5),
               ),
-            ),
-        ],
+            if (!inProgress)
+              SizedBox(
+                height: 30.0,
+                child: ElevatedButton(
+                  onPressed: () => {onSelected(device)},
+                  child: const Text('Connect'),
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

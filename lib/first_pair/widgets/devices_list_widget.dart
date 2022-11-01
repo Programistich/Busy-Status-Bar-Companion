@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/first_pair_bloc.dart';
@@ -21,8 +22,9 @@ class DevicesListWidget extends StatelessWidget {
       ),
     );
 
-    return SingleChildScrollView(
-      child: Column(
+    return Expanded(
+      child: ListView(
+        shrinkWrap: true,
         children: devicesWidget.toList(),
       ),
     );
