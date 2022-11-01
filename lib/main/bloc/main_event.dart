@@ -12,3 +12,5 @@ class MainEventState extends MainEvent {
 
   MainEventState({required this.stateUpdate});
 }
+
+class MainEventBusy extends MainEvent {}

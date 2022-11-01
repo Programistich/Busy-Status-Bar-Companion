@@ -13,6 +13,7 @@ class WifiBloc extends Bloc<WifiEvent, WifiState> {
   }) : super(WifiInitial(wifis: [])) {
     on<WifiEventInitial>((event, emit) async {
       final response = await bleService.getWifis();
+
       if (response != null) {
         final wifis = response.wifiList.map((e) => Wifi(name: e.ssid)).toList();
         emit(WifiInitial(wifis: wifis));
@@ -26,8 +27,11 @@ class WifiBloc extends Bloc<WifiEvent, WifiState> {
       );
       if (response == null) {
         emit(WifiStateError());
-      } else {
+      }
+      if (response?.successful == true) {
         emit(WifiStateDone());
+      } else {
+        emit(WifiStateError());
       }
     });
   }

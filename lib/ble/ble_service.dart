@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:busy_status_bar/ble/ble_constants.dart';
 import 'package:busy_status_bar/ble/protocol/ble_protocol_decoder.dart';
 import 'package:busy_status_bar/ble/protocol/ble_protocol_encoder.dart';
@@ -25,9 +27,16 @@ class BLEService {
 
   Future<WiFiListResponse?> getWifis() async {
     writeRequest(WiFiSearchRequest());
-
-    return await decoder.state.where((event) => event is WiFiListResponse).first
-        as WiFiListResponse?;
+    try {
+      final result = await decoder.state
+          .where((event) => event is WiFiListResponse)
+          .first as WiFiListResponse;
+      log('Result wifi response $result');
+      return result;
+    } on Exception catch (exception) {
+      log('Result wifi response error $exception');
+      return null;
+    }
   }
 
   Future<WiFiConnectResponse?> connectToWifi(

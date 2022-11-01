@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:image/image.dart' as img;
 
 import '../../ble/ble_connection.dart';
 import '../../ble/ble_service.dart';
@@ -31,6 +34,12 @@ class MainBloc extends Bloc<MainEvent, MainState> {
           return MainConnecting();
         }
       });
+    });
+
+    on<MainEventBusy>((event, emit) async {
+      final imageFile = File('test_resources/test.png');
+      final image = img.decodeImage(imageFile.readAsBytesSync())!;
+      await bleService.sendImage(image);
     });
   }
 }
