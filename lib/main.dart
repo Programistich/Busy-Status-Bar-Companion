@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'ble/ble_connection.dart';
 import 'ble/ble_scanner.dart';
@@ -13,7 +14,8 @@ void main() async {
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
-  final firstPairRepository = FirstPairRepository();
+  final prefs = await SharedPreferences.getInstance();
+  final firstPairRepository = FirstPairRepository(prefs);
   final isDeviceExist = await firstPairRepository.isDeviceExist();
 
   var startPath = firstScreenRoute(isDeviceExist);
@@ -48,7 +50,7 @@ class App extends StatelessWidget {
             create: (context) => BLEConnection(ble),
           ),
           RepositoryProvider(
-            create: (context) => BLEService(ble),
+            create: (context) => BLEService(ble, firstPairRepository),
           ),
         ],
         child: MaterialApp.router(
