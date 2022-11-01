@@ -23,20 +23,6 @@ class BLEConnection {
             connectionState: DeviceConnectionState.disconnected,
             failure: null,
           ));
-        } else if (update.connectionState == DeviceConnectionState.connected) {
-          if (wait) {
-            addUpdate(ConnectionStateUpdate(
-              deviceId: update.deviceId,
-              connectionState: DeviceConnectionState.connecting,
-              failure: null,
-            ));
-            await Future.delayed(const Duration(seconds: 10));
-          }
-          addUpdate(ConnectionStateUpdate(
-            deviceId: update.deviceId,
-            connectionState: DeviceConnectionState.connected,
-            failure: null,
-          ));
         } else {
           addUpdate(update);
         }
