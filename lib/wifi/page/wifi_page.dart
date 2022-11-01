@@ -1,4 +1,3 @@
-import 'package:busy_status_bar/first_pair/repository/first_pair_repository.dart';
 import 'package:busy_status_bar/wifi/bloc/wifi_bloc.dart';
 import 'package:busy_status_bar/wifi/widgtes/wifi_list_widget.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +13,7 @@ class WifiPage extends StatelessWidget {
     return BlocProvider(
       create: (context) {
         final bleService = context.read<BLEService>();
-        final repository = context.read<FirstPairRepository>();
-        return WifiBloc(bleService: bleService, repository: repository)
-          ..add(WifiEventInitial());
+        return WifiBloc(bleService: bleService)..add(WifiEventInitial());
       },
       child: BlocBuilder<WifiBloc, WifiState>(
         builder: (context, state) {
@@ -24,6 +21,14 @@ class WifiPage extends StatelessWidget {
 
           if (state is WifiInitial) {
             bodyContent.add(WifiListWidget(wifis: state.wifis));
+          }
+
+          if (state is WifiStateDone) {
+            bodyContent.add(const Text('Done connect'));
+          }
+
+          if (state is WifiStateError) {
+            bodyContent.add(const Text('Error connect'));
           }
 
           return Scaffold(

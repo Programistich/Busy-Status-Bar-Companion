@@ -6,3 +6,7 @@ class WifiInitial extends WifiState {
   final List<Wifi> wifis;
   WifiInitial({required this.wifis});
 }
+
+class WifiStateDone extends WifiState {}
+
+class WifiStateError extends WifiState {}

@@ -5,61 +5,85 @@ import 'package:busy_status_bar/ble/protocol/protocol_requests.dart';
 import 'package:busy_status_bar/ble/protocol/protocol_responses.dart';
 import 'package:busy_status_bar/first_pair/repository/first_pair_repository.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:image/image.dart';
 import 'package:logger/logger.dart';
 
 class BLEService {
   final FlutterReactiveBle _ble;
   final FirstPairRepository repository;
+  late final deviceId = repository.getDeviceUnSafe();
 
   final decoder = BLEProtocolDecoder();
   final encoder = BLEProtocolEncoder();
   final logger = Logger();
 
   BLEService(this._ble, this.repository) {
-    final deviceId = repository.getDeviceUnSafe();
-    if (deviceId != null) {
-      _ble
-          .subscribeToCharacteristic(readCharacteristic(deviceId))
-          .listen((event) {
-        decoder.onNewBytes(event);
-      });
-    }
+    _ble.subscribeToCharacteristic(_readCharacteristic()).listen((event) {
+      decoder.onNewBytes(event);
+    });
   }
 
-  Future<void> ping(String deviceId) async {
-    final characteristic = QualifiedCharacteristic(
-      characteristicId: Uuid.parse('19ed82ae-ed21-4c9d-4145-228e62fe0000'),
-      serviceId: Uuid.parse('8fe5b3d5-2e7f-4a98-2a48-7acc60fe0000'),
-      deviceId: deviceId,
-    );
-    final value = <int>[3, -78, 2, 0];
-    _ble.writeCharacteristicWithoutResponse(characteristic, value: value);
-  }
-
-  Future<BleResponse> getWifis(String deviceId) async {
+  Future<WiFiListResponse?> getWifis() async {
     _ble.writeCharacteristicWithoutResponse(
-      writeCharacteristic(deviceId),
+      _writeCharacteristic(),
       value: encoder.wrapRequest(WiFiSearchRequest()),
+    );
+
+    return await decoder.state.where((event) => event is WiFiListResponse).first
+        as WiFiListResponse?;
+  }
+
+  Future<WiFiConnectResponse?> connectToWifi(
+    String name,
+    String password,
+  ) async {
+    _ble.writeCharacteristicWithoutResponse(
+      _writeCharacteristic(),
+      value: encoder.wrapRequest(WiFiConnectRequest(name, password)),
     );
 
     return await decoder.state
         .where((event) => event is WiFiConnectResponse)
-        .first;
+        .first as WiFiConnectResponse?;
   }
-}
 
-QualifiedCharacteristic readCharacteristic(String deviceId) {
-  return QualifiedCharacteristic(
-    characteristicId: BLEConstants.service,
-    serviceId: BLEConstants.rx,
-    deviceId: deviceId,
-  );
-}
+  Future<ImageResponse?> sendImage(Image image) async {
+    _ble.writeCharacteristicWithoutResponse(
+      _writeCharacteristic(),
+      value: encoder.wrapRequest(SendImageRequest(image)),
+    );
 
-QualifiedCharacteristic writeCharacteristic(String deviceId) {
-  return QualifiedCharacteristic(
-    characteristicId: BLEConstants.service,
-    serviceId: BLEConstants.tx,
-    deviceId: deviceId,
-  );
+    return await decoder.state.where((event) => event is ImageResponse).first
+        as ImageResponse?;
+  }
+
+  Future<StatusResponse?> getStatus() async {
+    _ble.writeCharacteristicWithoutResponse(
+      _writeCharacteristic(),
+      value: encoder.wrapRequest(StatusRequest()),
+    );
+
+    return await decoder.state.where((event) => event is StatusResponse).first
+        as StatusResponse?;
+  }
+
+  QualifiedCharacteristic _readCharacteristic() {
+    if (deviceId == null) throw Exception('Device not found');
+
+    return QualifiedCharacteristic(
+      characteristicId: BLEConstants.service,
+      serviceId: BLEConstants.rx,
+      deviceId: deviceId!,
+    );
+  }
+
+  QualifiedCharacteristic _writeCharacteristic() {
+    if (deviceId == null) throw Exception('Device not found');
+
+    return QualifiedCharacteristic(
+      characteristicId: BLEConstants.service,
+      serviceId: BLEConstants.tx,
+      deviceId: deviceId!,
+    );
+  }
 }

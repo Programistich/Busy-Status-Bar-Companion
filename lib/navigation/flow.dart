@@ -1,7 +1,7 @@
 import 'package:busy_status_bar/first_pair/page/first_pair_page.dart';
 import 'package:busy_status_bar/navigation/route.dart';
 import 'package:busy_status_bar/tos/page/tos_page.dart';
-import 'package:busy_status_bar/wifi/page/wiff_page.dart';
+import 'package:busy_status_bar/wifi/page/wifi_page.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
