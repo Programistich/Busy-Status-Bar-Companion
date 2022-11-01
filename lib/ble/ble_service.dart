@@ -3,15 +3,28 @@ import 'package:busy_status_bar/ble/protocol/ble_protocol_decoder.dart';
 import 'package:busy_status_bar/ble/protocol/ble_protocol_encoder.dart';
 import 'package:busy_status_bar/ble/protocol/protocol_requests.dart';
 import 'package:busy_status_bar/ble/protocol/protocol_responses.dart';
+import 'package:busy_status_bar/first_pair/repository/first_pair_repository.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:logger/logger.dart';
 
 class BLEService {
-  BLEService(this._ble);
-
   final FlutterReactiveBle _ble;
+  final FirstPairRepository repository;
 
+  final decoder = BLEProtocolDecoder();
+  final encoder = BLEProtocolEncoder();
   final logger = Logger();
+
+  BLEService(this._ble, this.repository) {
+    final deviceId = repository.getDeviceUnSafe();
+    if (deviceId != null) {
+      _ble
+          .subscribeToCharacteristic(readCharacteristic(deviceId))
+          .listen((event) {
+        decoder.onNewBytes(event);
+      });
+    }
+  }
 
   Future<void> ping(String deviceId) async {
     final characteristic = QualifiedCharacteristic(
@@ -24,19 +37,14 @@ class BLEService {
   }
 
   Future<BleResponse> getWifis(String deviceId) async {
-    final encoder = BLEProtocolEncoder();
-    final prepareBytes = encoder.wrapRequest(WiFiSearchRequest());
-
     _ble.writeCharacteristicWithoutResponse(
       writeCharacteristic(deviceId),
-      value: prepareBytes,
+      value: encoder.wrapRequest(WiFiSearchRequest()),
     );
 
-    final decoder = BLEProtocolDecoder();
-    final resultBytes =
-        await _ble.readCharacteristic(readCharacteristic(deviceId));
-    decoder.onNewBytes(resultBytes);
-    return await decoder.state.first;
+    return await decoder.state
+        .where((event) => event is WiFiConnectResponse)
+        .first;
   }
 }
 
