@@ -20,12 +20,18 @@ class BLEService {
   final logger = Logger();
 
   BLEService(this._ble, this.repository) {
+    subscribeOnUpdate();
+  }
+
+  void subscribeOnUpdate() {
     _ble.subscribeToCharacteristic(_readCharacteristic()).listen((event) {
+      logger.d("On event ${event}");
       decoder.onNewBytes(event);
     });
   }
 
   Future<WiFiListResponse?> getWifis() async {
+    subscribeOnUpdate();
     writeRequest(WiFiSearchRequest());
     try {
       final result = await decoder.state
