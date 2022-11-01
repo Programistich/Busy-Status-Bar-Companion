@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:busy_status_bar/ble/ble_constants.dart';
 import 'package:busy_status_bar/ble/protocol/ble_protocol_decoder.dart';
 import 'package:busy_status_bar/ble/protocol/ble_protocol_encoder.dart';
@@ -37,10 +35,10 @@ class BLEService {
       final result = await decoder.state
           .where((event) => event is WiFiListResponse)
           .first as WiFiListResponse;
-      log('Result wifi response $result');
+      logger.i('Result wifi response $result');
       return result;
     } on Exception catch (exception) {
-      log('Result wifi response error $exception');
+      logger.i('Result wifi response error $exception');
       return null;
     }
   }
@@ -49,18 +47,35 @@ class BLEService {
     String name,
     String password,
   ) async {
-    await writeRequest(WiFiConnectRequest(name, password));
+    subscribeOnUpdate();
+    writeRequest(WiFiConnectRequest(name, password));
 
-    return await decoder.state
-        .where((event) => event is WiFiConnectResponse)
-        .first as WiFiConnectResponse?;
+    try {
+      final result = await decoder.state
+          .where((event) => event is WiFiConnectResponse)
+          .first as WiFiConnectResponse;
+      logger.i('Result wifi connect $result');
+      return result;
+    } on Exception catch (exception) {
+      logger.i('Result wifi connect error $exception');
+      return null;
+    }
   }
 
   Future<ImageResponse?> sendImage(Image image) async {
-    await writeRequest(SendImageRequest(image));
+    subscribeOnUpdate();
+    writeRequest(SendImageRequest(image));
 
-    return await decoder.state.where((event) => event is ImageResponse).first
-        as ImageResponse?;
+    try {
+      final result = await decoder.state
+          .where((event) => event is ImageResponse)
+          .first as ImageResponse;
+      logger.i('Result image result $result');
+      return result;
+    } on Exception catch (exception) {
+      logger.i('Result image result $exception');
+      return null;
+    }
   }
 
   Future<StatusResponse?> getStatus() async {

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:image/image.dart' as img;
+import 'package:logger/logger.dart';
 
 import '../../ble/ble_connection.dart';
 import '../../ble/ble_service.dart';
@@ -16,6 +17,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   final BLEConnection bleConnection;
   final BLEService bleService;
   final FirstPairRepository firstPairRepository;
+  final logger = Logger();
 
   MainBloc({
     required this.bleConnection,
@@ -28,6 +30,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       await Future.delayed(const Duration(seconds: 2));
       await bleConnection.connect(deviceId, false);
       await emit.forEach(bleConnection.state, onData: (data) {
+        logger.i("Ble connection state in main $state");
         if (data.connectionState == DeviceConnectionState.connected) {
           return MainConnected(id: data.deviceId);
         } else {
