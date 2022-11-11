@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:image/image.dart' as img;
@@ -40,8 +41,9 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     });
 
     on<MainEventBusy>((event, emit) async {
-      final imageFile = File('test_resources/test.png');
-      final image = img.decodeImage(imageFile.readAsBytesSync())!;
+      final bytes = await rootBundle.load('resources/test.png');
+      final bytesList = bytes.buffer.asUint8List();
+      final image = img.decodeImage(bytesList)!;
       await bleService.sendImage(image);
     });
   }

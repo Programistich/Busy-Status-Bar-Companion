@@ -86,10 +86,24 @@ class BLEService {
   }
 
   Future<void> writeRequest(BleRequest request) async {
-    _ble.writeCharacteristicWithoutResponse(
-      _writeCharacteristic(),
-      value: encoder.wrapRequest(request),
-    );
+    await writeRequestSeparate(request);
+  }
+
+  Future<void> writeRequestSeparate(BleRequest request) async {
+    final letters = encoder.wrapRequest(request);
+    var chunks = [];
+    int chunkSize = 20;
+    for (var i = 0; i < letters.length; i += chunkSize) {
+      chunks.add(letters.sublist(
+          i, i + chunkSize > letters.length ? letters.length : i + chunkSize));
+    }
+
+    for (var element in chunks) {
+      await _ble.writeCharacteristicWithoutResponse(
+        _writeCharacteristic(),
+        value: element,
+      );
+    }
   }
 
   QualifiedCharacteristic _readCharacteristic() {
