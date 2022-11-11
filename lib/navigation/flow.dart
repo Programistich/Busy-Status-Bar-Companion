@@ -38,6 +38,6 @@ String firstScreenRoute(bool isDeviceExist) {
   if (isDeviceExist) {
     return NavigationRoute.tosScreen;
   } else {
-    return NavigationRoute.tosScreen;
+    return NavigationRoute.mainScreen;
   }
 }
