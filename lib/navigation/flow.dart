@@ -36,8 +36,8 @@ GoRouter navigationFlow(String startRoute) {
 
 String firstScreenRoute(bool isDeviceExist) {
   if (isDeviceExist) {
-    return NavigationRoute.tosScreen;
-  } else {
     return NavigationRoute.mainScreen;
+  } else {
+    return NavigationRoute.tosScreen;
   }
 }
